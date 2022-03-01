@@ -1,0 +1,64 @@
+
+1.
+ALTER TABLE customer MODIFY COLUMN cust_type varchar(25);
+2.
+ALTER TABLE bank ADD BANK_POSCODE char(5);
+select* from bank;
+3. 
+ALTER TABLE bank DROP bank_poscode;
+4. 
+SELECT * FROM bank;
+5. 
+SELECT emp_id, emp_fname, emp_lname FROM employee;
+6. 
+UPDATE ACCOUNT SET ACC_STATUS = "Active" WHERE ACC_NO = 1101414721;
+SELECT * FROM ACCOUNT;
+  
+7. 
+SELECT * FROM TRANSACTIONS;
+DELETE FROM transactions WHERE reference_no = 145678129;
+SELECT * FROM TRANSACTIONS;
+
+8. 
+  SELECT * FROM LOAN;
+SELECT loan_id, interest_rate, cust_id FROM loan WHERE loan_amount = (SELECT MAX(loan_amount) FROM loan);
+9. 
+SELECT ACC_TYPE, COUNT(ACC_STATUS) AS Active_Accounts FROM ACCOUNT WHERE ACC_STATUS = "ACTIVE" GROUP BY ACC_TYPE;
+10. 
+SELECT loan_type, SUM(loan_amount) as Total_Loan FROM loan WHERE loan_amount GROUP BY loan_type;
+11. 
+	DELIMITER $$
+	CREATE TRIGGER add_balances AFTER INSERT ON transactions
+    FOR EACH ROW
+    BEGIN 
+	UPDATE account SET balance = balance + NEW.transaction_amount WHERE acc_no = NEW.acc_no AND NEW.reference_no LIKE '1%' ;
+    END$$
+	DELIMITER ;
+	
+	SELECT*FROM ACCOUNT;
+	INSERT INTO TRANSACTIONS VALUES ('145678129', 'Sherene Yeoh', '230.00', '2020-03-04', 2650498612);
+	SELECT * FROM ACCOUNT;
+	
+	DELIMITER $$
+	CREATE TRIGGER minus_balances AFTER INSERT ON transactions
+    	FOR EACH ROW
+    	BEGIN 
+		UPDATE account SET balance = (balance - NEW.transaction_amount) WHERE acc_no = NEW.acc_no AND NEW.reference_no LIKE '8%' ;
+    	END$$
+	DELIMITER ;
+
+	INSERT INTO TRANSACTIONS VALUES ('850236514', 'Boonie Boonz' , '50.00', '2020-07-06', 1128191356);
+
+12. 
+DELIMITER //
+	CREATE PROCEDURE TransactionHistory(IN Acc_No CHAR(10))
+	BEGIN
+	SELECT reference_no, recepient_name, transaction_amount, transaction_date FROM transactions, account WHERE Acc_No = transactions.acc_no AND transactions.acc_no = account.acc_no;
+	END //
+	DELIMITER ;
+	
+	 call TransactionHistory('1128191356');
+
+
+	DROP PROCEDURE TransactionHistory;
+
